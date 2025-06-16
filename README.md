@@ -2,81 +2,74 @@
 
 ## 1. Objetivo do Projeto
 
-Este projeto foi desenvolvido como parte do trabalho de Programação Laboratorial de Banco de Dados e tem como objetivo a criação de uma aplicação bancária simulada chamada "Banco Baldur's". O sistema gerencia contas bancárias (Poupança, Corrente e Investimento), clientes e funcionários, com foco em Programação Orientada a Objetos (POO), interface gráfica em Java Swing e persistência de dados em um banco de dados MySQL. O projeto visa demonstrar o domínio em design de banco de dados relacional, consultas SQL, gatilhos, procedimentos armazenados e a integração de uma aplicação Java com o banco. [cite: 10, 11, 12]
+Este projeto foi desenvolvido como parte do trabalho de Laboratório de Banco de Dados. [cite_start]O objetivo foi criar uma aplicação bancária simulada, o "Banco Baldur's", construída em Java com interface gráfica Swing e utilizando um banco de dados MySQL para a persistência dos dados. [cite_start]O foco foi a aplicação de conceitos de Programação Orientada a Objetos (POO), a criação de uma estrutura de banco de dados relacional complexa e a implementação de operações avançadas como gatilhos, procedimentos armazenados e visões.
 
-## 2. Tecnologias Utilizadas
+## 2. Arquitetura e Tecnologias
 
-* **Linguagem de Programação:** Java (JDK OpenJDK 24 implícito)
-* **Interface Gráfica (GUI):** Java Swing
-* **Banco de Dados:** MySQL 8.0
-* **Conexão Java-BD:** JDBC (MySQL Connector/J)
-* **IDE:** IntelliJ IDEA (implícito pelo contexto)
+* [cite_start]**Linguagem de Programação:** Java (JDK OpenJDK 24) 
+* [cite_start]**Interface Gráfica (GUI):** Java Swing 
+* [cite_start]**Banco de Dados:** MySQL 8.0 
+* [cite_start]**Conexão Java-BD:** JDBC (via MySQL Connector/J) 
+* [cite_start]**Padrão de Arquitetura:** Model-View-Controller (MVC) 
+    * [cite_start]**Model:** Representa as entidades do banco de dados (`Usuario`, `Conta`, etc.). 
+    * [cite_start]**View:** Camada de apresentação responsável pela interface gráfica do usuário (`LoginView`, `ClienteView`, etc.). 
+    * [cite_start]**Controller:** Orquestra a lógica de negócios, mediando a interação entre a View e o Model/DAO. 
+    * [cite_start]**DAO (Data Access Object):** Camada de acesso aos dados, responsável por toda a comunicação com o banco de dados MySQL. 
+    * [cite_start]**Util:** Classes utilitárias para tarefas como criptografia de senhas. 
 
-## 3. Funcionalidades Implementadas
+## 3. Diagramas do Sistema
 
-O sistema é dividido em módulos para Cliente e Funcionário, cada um com suas respectivas funcionalidades:
+#### 3.1. Diagrama de Caso de Uso
 
-### Módulo Cliente:
-* **Autenticação Segura:** Login com CPF, senha (hash MD5) e sistema de OTP (One-Time Password) funcional no backend (procedure `gerar_otp` no MySQL) com solicitação e validação implementada na interface Java. [cite: 17, 42]
-* **Consulta de Saldo:** Visualização do saldo atual da conta. [cite: 54]
-* **Realizar Depósito:** Permite depósitos com validação de limite diário (R$10.000,00) via trigger no banco. [cite: 55, 113]
-* **Realizar Saque:** Permite saques com validação de saldo disponível. [cite: 55, 114]
-* **Realizar Transferência:** Transferência de valores entre contas, com validação de conta destino e saldo. [cite: 56, 115]
-* **Consultar Extrato:** Exibição das últimas 50 transações da conta. [cite: 56, 116]
-* **Consultar Limite da Conta:** Visualização do limite para contas correntes. [cite: 57, 117]
-* **Alterar Própria Senha:** Permite ao cliente alterar sua senha de acesso, com validação de força da nova senha. [cite: 104]
+O diagrama ilustra as funcionalidades disponíveis para os atores **Cliente** e **Funcionário**.
 
-### Módulo Funcionário (Gerente):
-* **Autenticação Segura:** Login com CPF, senha (hash MD5) e sistema de OTP. [cite: 17, 42]
-* **Abertura de Nova Conta para Cliente:** Cadastro completo de novo cliente e abertura de contas (Poupança, Corrente, Investimento) com geração automática de número de conta. [cite: 18, 45, 91] Validação de senha forte para o novo cliente.
-* **Encerrar Conta de Cliente:** Permite o encerramento de contas ativas com saldo zero, com validação da senha do funcionário logado. [cite: 18, 47, 96]
-* **Cadastrar Novo Funcionário:** Cadastro de novos funcionários no sistema, com geração de código de funcionário. [cite: 19, 51, 106] Validação de senha forte para o novo funcionário.
-* **Alterar Dados do Cliente:** Permite a alteração de telefone e endereço de clientes cadastrados, com validação da senha do funcionário e registro de auditoria detalhado. [cite: 50, 104]
-* **Alterar Dados da Conta Corrente:** Permite a alteração de limite e taxa de manutenção de contas correntes, com validação da senha do funcionário. [cite: 50, 102]
-* **Consultas de Dados:**
-   * Visualização do "Resumo de Contas por Cliente" (via `vw_resumo_contas`). [cite: 48, 101, 79]
-   * Visualização das "Movimentações Recentes" (via `vw_movimentacoes_recentes`). [cite: 48, 101, 79]
-* **Geração de Relatórios Exportáveis:** Geração dos relatórios acima com opção de exportação para formato CSV. [cite: 19, 53, 108]
-* **Auditoria:** Registro de ações críticas como logins (sucesso e falha com motivos), abertura de conta, encerramento de conta, cadastro de funcionário e alterações de dados do cliente na tabela `auditoria`. [cite: 43, 46, 51, 76]
+![Captura de tela 2025-06-15 231141](https://github.com/user-attachments/assets/a3d5995e-38a9-4267-bfc3-a5c2af2407fe)
 
-## 4. Configuração do Banco de Dados
 
-1.  **Pré-requisitos:** Ter um servidor MySQL (versão 8.x recomendada) instalado e em execução. [cite: 62]
-2.  **Criação do Banco:**
-   * Abra o MySQL Workbench (ou outro cliente MySQL).
-   * Copie o conteúdo completo do arquivo `script_banco_completo.sql` (o script SQL que te enviei por último, que inclui `DROP DATABASE IF EXISTS BancoBaldurs;`, `CREATE SCHEMA`, todas as tabelas, triggers, procedures, views e dados de teste).
-   * Execute o script completo. Isso criará o banco de dados `BancoBaldurs`, todas as estruturas necessárias e os dados de teste iniciais.
 
-## 5. Executando a Aplicação Java
+* [cite_start]**Ator Cliente:** Pode se autenticar, realizar operações financeiras, consultar informações da conta e encerrar sua sessão.
+* [cite_start]**Ator Funcionário:** Pode se autenticar, gerenciar contas de clientes, cadastrar novos funcionários, alterar dados e gerar relatórios.
 
-1.  **IDE:** Importe o projeto para o IntelliJ IDEA (ou outra IDE Java de sua preferência).
-2.  **Bibliotecas (Dependências):**
-   * Certifique-se de que o **MySQL Connector/J** (driver JDBC para MySQL) está configurado no projeto. Se estiver usando Maven, ele deve estar no `pom.xml`. Caso contrário, adicione o JAR manualmente às bibliotecas do projeto.
-   * Outras dependências (como `opencsv` se você tivesse implementado a exportação para CSV usando essa biblioteca, mas nossa `CSVExporter` é manual) devem ser listadas aqui. Para a versão atual, apenas o MySQL Connector/J é essencial.
-3.  **Configuração da Conexão:**
-   * Verifique e, se necessário, ajuste os dados de conexão com o banco no arquivo `dao/ConnectionFactory.java`:
-       ```java
-       private static final String URL = "jdbc:mysql://localhost:3306/BancoBaldurs";
-       private static final String USER = "seu_usuario_mysql"; // Ex: root
-       private static final String PASSWORD = "sua_senha_mysql";
-       ```
-4.  **Executar:**
-   * Encontre a classe `view.MainApp.java`.
-   * Execute o método `main` desta classe para iniciar a aplicação.
+#### 3.2. Diagrama de Classes
 
-## 6. Credenciais de Teste (Padrão do Script SQL)
+O diagrama de classes representa a estrutura das entidades do sistema e seus relacionamentos. [cite_start]A classe `Usuario` é a base para `Cliente` e `Funcionario`, e a classe `Conta` é a base para as especializações `ContaCorrente`, `ContaPoupanca` e `ContaInvestimento`.
 
-* **Cliente Teste:**
-   * CPF: `12345678900`
-   * Senha: `Banco$eguro25` (ou `1234` se você não alterou via sistema)
-* **Funcionário Admin (Gerente):**
-   * CPF: `11122233344`
-   * Senha: `admin`
-* **Cliente Destino (para transferências):**
-   * CPF: `98765432100`
-   * Senha: `senha`
-   * Conta (Poupança): `20002-2`
+![Imagem do WhatsApp de 2025-06-15 à(s) 17 33 27_efa6fc0d](https://github.com/user-attachments/assets/a0116ced-bf10-4aab-b36f-c2f28dfb6325)
 
-Lembre-se de usar o botão "Gerar OTP" na tela de login.
 
----
+#### 3.3. Diagrama de Sequência (Exemplo: Transferência)
+
+Este diagrama detalha o fluxo de interações para uma operação de transferência.
+
+![Imagem do WhatsApp de 2025-06-04 à(s) 18 19 04_1d6f2084](https://github.com/user-attachments/assets/282c63d4-c189-4b23-b840-e83938540ee3)
+
+
+**Fluxo da Operação:** O Cliente insere os dados na Aplicação (App). A App envia a requisição ao Servidor (lógica do Controller/DAO), que executa as operações de débito e crédito no Banco de Dados. [cite_start]O Banco de Dados retorna a confirmação, o Servidor informa o status para a App, que exibe o resultado final ao Cliente.
+
+## 4. Configuração do Ambiente
+
+#### 4.1. Banco de Dados
+
+1.  **Pré-requisitos:** É necessário ter um servidor MySQL em execução.
+2.  **Criação do Banco:** Execute o script SQL completo fornecido com o projeto. [cite_start]Ele criará o schema `BancoBaldurs`, todas as tabelas, e populará o banco com os dados de teste iniciais.
+
+#### 4.2. Aplicação Java
+
+1.  [cite_start]**Pré-requisitos:** Projeto importado em uma IDE Java (como IntelliJ IDEA) e o driver JDBC (MySQL Connector/J) adicionado às dependências.
+2.  [cite_start]**Configuração:** Ajuste as credenciais de acesso ao banco de dados (URL, usuário e senha) no arquivo `dao/ConnectionFactory.java`.
+3.  [cite_start]**Execução:** A aplicação é iniciada executando o método `main` da classe `view.MainApp.java`.
+
+## 5. Credenciais de Teste
+
+* **Cliente:**
+    * **CPF:** `12345678900`
+    * [cite_start]**Senha:** `1234` (ou a senha que foi alterada durante os testes) 
+* **Funcionário (Gerente):**
+    * **CPF:** `11122233344`
+    * [cite_start]**Senha:** `admin` 
+
+**Observação:** O login requer a geração de um OTP na interface da aplicação.
+
+## 6. Conclusão
+
+[cite_start]O projeto "Banco Baldur's" foi concluído com sucesso, atendendo a todos os requisitos funcionais e não funcionais especificados no documento do trabalho. [cite_start]A aplicação demonstra uma arquitetura MVC funcional, com uma clara separação de responsabilidades, e uma forte integração com um banco de dados relacional robusto que utiliza recursos avançados como triggers, procedimentos armazenados e visões para garantir a integridade dos dados e a implementação de regras de negócio complexas. [cite_start]As funcionalidades implementadas fornecem uma base sólida e completa para um sistema de gerenciamento bancário, cumprindo os objetivos propostos.
